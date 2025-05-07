@@ -121,6 +121,12 @@ def get_results(manager, sev_level, conf_level, lines):
     baseline = not isinstance(issues, list)
     candidate_indent = " " * 10
 
+    # Check if there are any skipped files first
+    skipped = manager.get_skipped()
+    if skipped and not len(issues):
+        bits.append("\tFiles were skipped during the scan. See 'Files skipped' section below.")
+        return "\n".join([bit for bit in bits])
+
     if not len(issues):
         return "\tNo issues identified."
 

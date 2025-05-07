@@ -277,6 +277,12 @@ class BanditManager:
         for count, fname in enumerate(files):
             LOG.debug("working on file : %s", fname)
 
+            if fname != "-" and not os.path.exists(fname):
+                LOG.error("File not found: %s", fname)
+                self.skipped.append((fname, "File not found"))
+                new_files_list.remove(fname)
+                continue
+
             try:
                 if fname == "-":
                     open_fd = os.fdopen(sys.stdin.fileno(), "rb", 0)

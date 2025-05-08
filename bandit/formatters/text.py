@@ -23,10 +23,6 @@ This formatter outputs the issues as plain text.
     5       y = yaml.load(ystr)
     6       yaml.dump(y)
 
-    Files were skipped during the scan. See 'Files skipped' section below.
-    Files skipped (1):
-        missing_file.py (File not found)
-
 .. versionadded:: 0.9.0
 
 .. versionchanged:: 1.5.0
@@ -34,9 +30,6 @@ This formatter outputs the issues as plain text.
 
 .. versionchanged:: 1.7.3
     New field `CWE` added to output
-
-.. versionchanged:: 1.7.4
-    Improved handling of skipped files in output
 
 """
 import datetime
@@ -127,15 +120,6 @@ def get_results(manager, sev_level, conf_level, lines):
     issues = manager.get_issue_list(sev_level, conf_level)
     baseline = not isinstance(issues, list)
     candidate_indent = " " * 10
-
-    # Check if there are any skipped files first
-    skipped = manager.get_skipped()
-    if skipped and not len(issues):
-        bits.append(
-            "\tFiles were skipped during the scan. "
-            "See 'Files skipped' section below."
-        )
-        return "\n".join([bit for bit in bits])
 
     if not len(issues):
         return "\tNo issues identified."

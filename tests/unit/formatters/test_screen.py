@@ -99,26 +99,6 @@ class ScreenFormatterTests(testtools.TestCase):
             )
 
     @mock.patch("bandit.core.manager.BanditManager.get_issue_list")
-    def test_skipped_files_message(self, get_issue_list):
-        conf = config.BanditConfig()
-        self.manager = manager.BanditManager(conf, "file")
-        self.manager.skipped = [("missing_file.py", "File not found")]
-
-        (tmp_fd, self.tmp_fname) = tempfile.mkstemp()
-        self.manager.out_file = self.tmp_fname
-
-        get_issue_list.return_value = collections.OrderedDict()
-        with mock.patch("bandit.formatters.screen.do_print") as m:
-            with open(self.tmp_fname, "w") as tmp_file:
-                screen.report(
-                    self.manager, tmp_file, bandit.LOW, bandit.LOW, lines=5
-                )
-            output = "\n".join([str(a) for a in m.call_args])
-            self.assertIn("Files were skipped during the scan", output)
-            self.assertNotIn("No issues identified", output)
-            self.assertIn("missing_file.py (File not found)", output)
-
-    @mock.patch("bandit.core.manager.BanditManager.get_issue_list")
     def test_report_nobaseline(self, get_issue_list):
         conf = config.BanditConfig()
         self.manager = manager.BanditManager(conf, "file")

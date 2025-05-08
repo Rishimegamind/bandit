@@ -23,10 +23,6 @@ This formatter outputs the issues as color coded text to screen.
     5       y = yaml.load(ystr)
     6       yaml.dump(y)
 
-    Files were skipped during the scan. See 'Files skipped' section below.
-    Files skipped (1):
-        missing_file.py (File not found)
-
 .. versionadded:: 0.9.0
 
 .. versionchanged:: 1.5.0
@@ -35,8 +31,6 @@ This formatter outputs the issues as color coded text to screen.
 .. versionchanged:: 1.7.3
     New field `CWE` added to output
 
-.. versionchanged:: 1.7.4
-    Improved handling of skipped files in output
 """
 import datetime
 import logging
@@ -161,17 +155,6 @@ def get_results(manager, sev_level, conf_level, lines):
     baseline = not isinstance(issues, list)
     candidate_indent = " " * 10
 
-    # Check if there are any skipped files first
-    skipped = manager.get_skipped()
-    if skipped and not len(issues):
-        bits.append(
-            header(
-                "\tFiles were skipped during the scan. "
-                "See 'Files skipped' section below."
-            )
-        )
-        return "\n".join([bit for bit in bits])
-
     if not len(issues):
         return "\tNo issues identified."
 
@@ -228,7 +211,6 @@ def report(manager, fileobj, sev_level, conf_level, lines=-1):
             bits.append(get_verbose_details(manager))
 
         bits.append(header("\nTest results:"))
-        issues = manager.get_issue_list(sev_level, conf_level)
         bits.append(get_results(manager, sev_level, conf_level, lines))
         bits.append(header("\nCode scanned:"))
         bits.append(
@@ -244,13 +226,6 @@ def report(manager, fileobj, sev_level, conf_level, lines=-1):
         bits.append(get_metrics(manager))
         skipped = manager.get_skipped()
         bits.append(header("Files skipped (%i):", len(skipped)))
-        if skipped and not len(issues):
-            bits.append(
-                header(
-                    "\tFiles were skipped during the scan. "
-                    "See 'Files skipped' section below."
-                )
-            )
         bits.extend(["\t%s (%s)" % skip for skip in skipped])
         do_print(bits)
 
